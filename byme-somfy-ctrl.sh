@@ -5,6 +5,7 @@
 
 # Set DEBUG to "true" or "false"
 DEBUG=true
+DEBUG=false
 if $DEBUG; then set -x; fi
 
 SCRIPTNAME=$1
@@ -203,7 +204,7 @@ function Wait() {
 }
 
 function ResetByme() {
-  if $DEBUG; then Clear; fi
+  Ask "Are you sure to change By-me configuration?"
 
   Print "Reset AdjFB BLIND"
   SendMsg "BC 00BB 201B 66 03D7  19  FF  1001  FF"
@@ -260,8 +261,9 @@ function SetupBlindLimit() {
   SwitchUP 0
   Ask "Have you seen blind UP/DOWN movement?"
 
+  Show "Now, please move the blind until bottom limit!"
   Print "Manual DOWN/UP until blind is closed"
-  Pause
+  ManualMode
 
   Ask "Do you want to memo the blind bottom limit?"
   Print "UP for a short time"
@@ -291,7 +293,28 @@ function ChangeBlindLimit() {
 }
 
 function ManualMode() {
-  NotImplemented
+  while [ 1 ]; do
+    TITLE="Command"
+    MENUTEXT="Select:"
+    MENUITEMS="1 UP 2 DOWN"
+    MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS"`
+    MENUID=`eval $MENUCMD`
+    if [[ $MENUID == 1 ]]; then
+      SwitchUP 1
+    elif [[ $MENUID == 2 ]]; then
+      SwitchDOWN 1
+    else
+      break
+    fi
+
+    TITLE="Command"
+    TEXT="Press OK to to STOP movement"
+    MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
+    MENUID=`eval $MENUCMD`
+    EXIT=$?
+    SwitchUP 0
+    SwitchDOWN 0
+  done
 }
 
 
