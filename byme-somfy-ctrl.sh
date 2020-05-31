@@ -166,22 +166,27 @@ function ResetByme() {
 
   Print "Reset AdjFB BLIND"
   SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $FBID)  FF  1001  FF"
+  sleep 0.1
   if $DEBUG; then Pause; fi
 
   Print "Set new AdjFB SWITCH UP"
   SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $RIDUP) FF  1001  00"
+  sleep 0.1
   if $DEBUG; then Pause; fi
 
   Print "Set new AdjFB SWITCH DOWN"
   SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $RIDDW) FF  1001  00"
+  sleep 0.1
   if $DEBUG; then Pause; fi
 
   Print "Set GO link UP"
   SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GOUP)  01  9900 "
+  sleep 0.1
   if $DEBUG; then Pause; fi
 
   Print "Set GO link DOWN"
   SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GODW)  01  9901 "
+  sleep 0.1
   if $DEBUG; then Pause; fi
 
   Show "It works! I have changed By-me device configuration.\nWarning to move the blind."
