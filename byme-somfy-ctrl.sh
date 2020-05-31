@@ -140,6 +140,15 @@ function SendMsg() {
   return 0
 }
 
+function SwitchUP() {
+  if [ $1 -eq 1 ]; then VAL="81"; else VAL="80"; fi
+  SendMsg "BC 00BB 9900 E1 00 $VAL"
+}
+
+function SwitchDOWN() {
+  if [ $1 -eq 1 ]; then VAL="81"; else VAL="80"; fi
+  SendMsg "BC 00BB 9901 E1 00 $VAL"
+}
 
 function NotImplemented() {
 	TITLE="Warning"
@@ -158,41 +167,79 @@ function NotImplemented() {
 
 function ResetByme() {
   Clear
-  Print "Reset AdjFB"
-  SendMsg "BC 110F 21D6 E1 00 81"
+  Print "Reset AdjFB BLIND"
+  SendMsg "BC 00BB 201B 66 03D7  19  FF  1001  FF"
   Pause
-  Print "Set new AdjFB"
-
-  Print "Set GO UP"
-  Print "Set GO DOWN"
+  Print "Set new AdjFB SWITCH UP"
+  SendMsg "BC 00BB 201B 66 03D7  14  FF  1001  00"
+  Pause
+  Print "Set new AdjFB SWITCH DOWN"
+  SendMsg "BC 00BB 201B 66 03D7  15  FF  1001  00"
+  Pause
+  Print "Set GO link UP"
+  SendMsg "BC 00BB 201B 65 03E7  7E  01  9900 "
+  Pause
+  Print "Set GO link DOWN"
+  SendMsg "BC 00BB 201B 65 03E7  85  01  9901 "
   Pause
 }
 
 function ResetSomfyMotor() {
   NotImplemented
   Clear
+
   Print "Reset motor to default settings: UP+DOWN for 8s"
+  SwitchUP 1
+  SwitchDOWN 1
+  sleep 8
+  SwitchUP 0
+  SwitchDOWN 0
+  Print "> Have you seen blind UP/DOWN movement two times?"
   Pause
 }
 
 function SetupBlindLimit() {
   NotImplemented
   Clear
+
   Print "UP + DOWN for 3s"
+  SwitchUP 1
+  SwitchDOWN 1
+  sleep 3
+  SwitchUP 0
+  SwitchDOWN 0
   Print "> Have you seen blind UP/DOWN movement?"
   Pause
+
   Print "UP for 3s"
+  SwitchUP 1
+  sleep 3
+  SwitchUP 0
   Print "> Have you seen blind UP/DOWN movement?"
   Pause
+
   Print "Manual DOWN/UP until blind is closed"
   Pause
+
   Print "> Do you want to memo the blind bottom limit?"
   Pause
-  Print "UP for 0.5s"
+  Print "UP for 0.2s"
+  SwitchUP 1
+  sleep 0.2
+  SwitchUP 0
   Print "UP for 3s"
+  SwitchUP 1
+  sleep 3
+  SwitchUP 0
   Print "> Have you seen blind UP/DOWN movement?"
   Pause
+
   Print "UP + DOWN for 3s"
+  SwitchUP 1
+  SwitchDOWN 1
+  sleep 3
+  SwitchUP 0
+  SwitchDOWN 0
   Print "> Have you seen blind UP/DOWN movement?"
   Pause
 }
