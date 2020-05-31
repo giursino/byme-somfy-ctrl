@@ -1,5 +1,5 @@
 #!/bin/bash
-# Control the Somfy blind motor
+# Control the Somfy blind motor with VIMAR By-me actuator
 #
 # Giuseppe Ursino 2020.
 #set -x
