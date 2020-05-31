@@ -291,7 +291,7 @@ function DeleteBymeConfiguration() {
 
   if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
 
-  SendMsg "BC $SRCADDR $DSTADDR 69 03D7  00  CC  1001  FFFFFFFF"
+  SendMsg "BC $SRCADDR $DSTADDR 69 03D7  00  CC  1004  FFFFFFFF"
 
   Show "Ok, now you have to re-configure the By-me device on your plant.\nPlease do diagnostic on Vimar VIEW Pro APP."
 }
