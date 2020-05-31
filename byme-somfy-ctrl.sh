@@ -12,7 +12,6 @@ SCRIPTNAME=$1
 
 SENDMSG="echo 01847-sendmsg"
 SRCADDR="00BB"
-DSTADDR="201B"
 
 ######### EXIT HANDLER
 # param $1: exit status
@@ -147,11 +146,18 @@ function Input() {
 function ResetByme() {
   Ask "Are you sure to change By-me configuration?"
 
-  Input "Please, insert By-me device address (eg: 2001)"
-  DSTADDR=$OUT
+  DSTADDR=$(Input "Please, insert By-me device address (eg: 2001)")
+  if [ -z $DSTADDR ]; then
+    echo "ERROR: invalid address"
+    byebye 1
+  fi
 
-  Input "Please, insert blind actuator functional-block index (eg: 25)"
-  FBID=$OUT
+  FBID=$(Input "Please, insert blind actuator functional-block index (eg: 25)")
+  if [ -z $FBID ]; then
+    echo "ERROR: invalid FB"
+    byebye 1
+  fi
+
   TID=$(( $FBID - 22 ))
   RIDUP=$(( $TID*2 + 14 ))
   RIDDW=$(( $RIDUP+1 ))
@@ -245,6 +251,7 @@ function ChangeBlindLimit() {
 }
 
 function ManualMode() {
+
   while [ 1 ]; do
     TITLE="Command"
     MENUTEXT="Select:"
