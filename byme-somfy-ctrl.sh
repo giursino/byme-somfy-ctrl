@@ -143,14 +143,18 @@ function Input() {
   echo $OUT
 }
 
-function ResetByme() {
-  Ask "Are you sure to change By-me configuration?"
-
+function SetBymeDeviceAddress() {
   DSTADDR=$(Input "Please, insert By-me device address (eg: 2001)")
   if [ -z $DSTADDR ]; then
     echo "ERROR: invalid address"
     byebye 1
   fi
+}
+
+function ResetByme() {
+  Ask "Are you sure to change By-me configuration?"
+
+  if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
 
   FBID=$(Input "Please, insert blind actuator functional-block index (eg: 25)")
   if [ -z $FBID ]; then
@@ -283,7 +287,13 @@ function ManualMode() {
 }
 
 function DeleteBymeConfiguration() {
-  NotImplemented
+  Ask "Are you sure to restore to factory default the By-me device?"
+
+  if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
+
+  SendMsg "BC $SRCADDR $DSTADDR 69 03D7  00  CC  1001  FFFFFFFF"
+
+  Show "Ok, now you have to re-configure the By-me device on your plant.\nPlease do diagnostic on Vimar VIEW Pro APP."
 }
 
 ############# MENU ITEM
