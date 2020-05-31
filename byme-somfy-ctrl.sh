@@ -2,7 +2,10 @@
 # Control the Somfy blind motor with VIMAR By-me actuator
 #
 # Giuseppe Ursino 2020.
-#set -x
+
+# Set DEBUG to "true" or "false"
+DEBUG=true
+if $DEBUG; then set -x; fi
 
 SCRIPTNAME=$1
 
@@ -164,65 +167,103 @@ function NotImplemented() {
 	fi
 }
 
+function Show() {
+	TITLE="Info"
+	TEXT="$1"
+	MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
+	MENUID=`eval $MENUCMD`
+	EXIT=$?
+	if [[ $EXIT == 0 ]]; then
+		#ok
+		return
+	else
+		byebye 0
+	fi
+}
+
+function Ask() {
+	TITLE="Question"
+	TEXT="$1"
+	MENUCMD=`printf "%s --title '%s' --yesno '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
+	MENUID=`eval $MENUCMD`
+	EXIT=$?
+	if [[ $EXIT == 0 ]]; then
+		#yes
+    return
+	else
+		byebye 0
+	fi
+}
+
+function Wait() {
+  for i in $(seq 0 $((100/($1-1))) 100) ; do
+    echo $i | dialog --gauge "Please wait" 6 48 0 2>&1 1>&3
+    sleep 1
+  done
+}
 
 function ResetByme() {
-  Clear
+  if $DEBUG; then Clear; fi
+
   Print "Reset AdjFB BLIND"
   SendMsg "BC 00BB 201B 66 03D7  19  FF  1001  FF"
-  Pause
+  if $DEBUG; then Pause; fi
+
   Print "Set new AdjFB SWITCH UP"
   SendMsg "BC 00BB 201B 66 03D7  14  FF  1001  00"
-  Pause
+  if $DEBUG; then Pause; fi
+
   Print "Set new AdjFB SWITCH DOWN"
   SendMsg "BC 00BB 201B 66 03D7  15  FF  1001  00"
-  Pause
+  if $DEBUG; then Pause; fi
+
   Print "Set GO link UP"
   SendMsg "BC 00BB 201B 65 03E7  7E  01  9900 "
-  Pause
+  if $DEBUG; then Pause; fi
+
   Print "Set GO link DOWN"
   SendMsg "BC 00BB 201B 65 03E7  85  01  9901 "
-  Pause
+  if $DEBUG; then Pause; fi
+
+  Show "It works! I have changed By-me device configuration.\nWarning to move the blind."
 }
 
 function ResetSomfyMotor() {
-  NotImplemented
-  Clear
+  Ask "Are you sure to start factory reset procedure?"
 
   Print "Reset motor to default settings: UP+DOWN for 8s"
   SwitchUP 1
   SwitchDOWN 1
-  sleep 8
+  Wait 8
   SwitchUP 0
   SwitchDOWN 0
-  Print "> Have you seen blind UP/DOWN movement two times?"
-  Pause
+
+  Ask "Have you seen blind UP/DOWN movement *two* times?"
+
+  Show "It works!"
 }
 
 function SetupBlindLimit() {
-  NotImplemented
-  Clear
+  Ask "Are you sure to setup the blind bottom limit?"
 
   Print "UP + DOWN for 3s"
   SwitchUP 1
   SwitchDOWN 1
-  sleep 3
+  Wait 3
   SwitchUP 0
   SwitchDOWN 0
-  Print "> Have you seen blind UP/DOWN movement?"
-  Pause
+  Ask "Have you seen blind UP/DOWN movement?"
 
   Print "UP for 3s"
   SwitchUP 1
-  sleep 3
+  Wait 3
   SwitchUP 0
-  Print "> Have you seen blind UP/DOWN movement?"
-  Pause
+  Ask "Have you seen blind UP/DOWN movement?"
 
   Print "Manual DOWN/UP until blind is closed"
   Pause
 
-  Print "> Do you want to memo the blind bottom limit?"
-  Pause
+  Ask "Do you want to memo the blind bottom limit?"
   Print "UP for a short time"
   SwitchUP 1
   sleep 0.2
@@ -230,19 +271,19 @@ function SetupBlindLimit() {
   sleep 0.3
   Print "UP for 3s"
   SwitchUP 1
-  sleep 3
+  Wait 3
   SwitchUP 0
-  Print "> Have you seen blind UP/DOWN movement?"
-  Pause
+  Ask "Have you seen blind UP/DOWN movement?"
 
   Print "UP + DOWN for 3s"
   SwitchUP 1
   SwitchDOWN 1
-  sleep 3
+  Wait 3
   SwitchUP 0
   SwitchDOWN 0
-  Print "> Have you seen blind UP/DOWN movement?"
-  Pause
+  Ask "Have you seen blind UP/DOWN movement?"
+
+  Show "It works!"
 }
 
 function ChangeBlindLimit() {
