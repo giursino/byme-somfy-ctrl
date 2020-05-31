@@ -258,6 +258,9 @@ function ChangeBlindLimit() {
 function ManualMode() {
 
   while [ 1 ]; do
+    SwitchUP 0
+    SwitchDOWN 0
+
     TITLE="Command"
     MENUTEXT="Select:"
     MENUITEMS="1 UP 2 DOWN"
@@ -276,11 +279,12 @@ function ManualMode() {
     MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
     MENUID=`eval $MENUCMD`
     EXIT=$?
-    SwitchUP 0
-    SwitchDOWN 0
   done
 }
 
+function DeleteBymeConfiguration() {
+  NotImplemented
+}
 
 ############# MENU ITEM
 
@@ -304,6 +308,10 @@ ACTION[$I]="ChangeBlindLimit"
 let I++
 MENUITEM[$I]="$I \"Manual mode\""
 ACTION[$I]="ManualMode"
+
+let I++
+MENUITEM[$I]="$I \"Delete By-me configuration\""
+ACTION[$I]="DeleteBymeConfiguration"
 
 let I++
 MENUITEM[$I]="q QUIT"
