@@ -11,6 +11,8 @@ if $DEBUG; then set -x; fi
 SCRIPTNAME=$1
 
 SENDMSG="echo 01847-sendmsg"
+SRCADDR="00BB"
+DSTADDR="201B"
 
 ######### EXIT HANDLER
 # param $1: exit status
@@ -77,12 +79,12 @@ function SendMsg() {
 
 function SwitchUP() {
   if [ $1 -eq 1 ]; then VAL="81"; else VAL="80"; fi
-  SendMsg "BC 00BB 9900 E1 00 $VAL"
+  SendMsg "BC $SRCADDR 9900 E1 00 $VAL"
 }
 
 function SwitchDOWN() {
   if [ $1 -eq 1 ]; then VAL="81"; else VAL="80"; fi
-  SendMsg "BC 00BB 9901 E1 00 $VAL"
+  SendMsg "BC $SRCADDR 9901 E1 00 $VAL"
 }
 
 function NotImplemented() {
@@ -134,27 +136,46 @@ function Wait() {
   done
 }
 
+function Input() {
+  TITLE="Input required"
+  TEXT="$1"
+  CMD=`printf "%s --title '%s' --inputbox '%s' 24 48 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
+  OUT=`eval $CMD` || byebye 0
+  echo $OUT
+}
+
 function ResetByme() {
   Ask "Are you sure to change By-me configuration?"
 
+  Input "Please, insert By-me device address (eg: 2001)"
+  DSTADDR=$OUT
+
+  Input "Please, insert blind actuator functional-block index (eg: 25)"
+  FBID=$OUT
+  TID=$(( $FBID - 22 ))
+  RIDUP=$(( $TID*2 + 14 ))
+  RIDDW=$(( $RIDUP+1 ))
+  GOUP=$(( (($TID*2)*7)+84 ))
+  GODW=$(( $GOUP+7 ))
+
   Print "Reset AdjFB BLIND"
-  SendMsg "BC 00BB 201B 66 03D7  19  FF  1001  FF"
+  SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $FBID)  FF  1001  FF"
   if $DEBUG; then Pause; fi
 
   Print "Set new AdjFB SWITCH UP"
-  SendMsg "BC 00BB 201B 66 03D7  14  FF  1001  00"
+  SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $RIDUP) FF  1001  00"
   if $DEBUG; then Pause; fi
 
   Print "Set new AdjFB SWITCH DOWN"
-  SendMsg "BC 00BB 201B 66 03D7  15  FF  1001  00"
+  SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $RIDDW) FF  1001  00"
   if $DEBUG; then Pause; fi
 
   Print "Set GO link UP"
-  SendMsg "BC 00BB 201B 65 03E7  7E  01  9900 "
+  SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GOUP)  01  9900 "
   if $DEBUG; then Pause; fi
 
   Print "Set GO link DOWN"
-  SendMsg "BC 00BB 201B 65 03E7  85  01  9901 "
+  SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GODW)  01  9901 "
   if $DEBUG; then Pause; fi
 
   Show "It works! I have changed By-me device configuration.\nWarning to move the blind."
