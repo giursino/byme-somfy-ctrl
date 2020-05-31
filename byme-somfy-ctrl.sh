@@ -223,10 +223,11 @@ function SetupBlindLimit() {
 
   Print "> Do you want to memo the blind bottom limit?"
   Pause
-  Print "UP for 0.5s"
+  Print "UP for a short time"
   SwitchUP 1
-  sleep 0.5
+  sleep 0.2
   SwitchUP 0
+  sleep 0.3
   Print "UP for 3s"
   SwitchUP 1
   sleep 3
