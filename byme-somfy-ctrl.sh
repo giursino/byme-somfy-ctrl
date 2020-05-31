@@ -24,8 +24,6 @@ function byebye()
 }
 
 DIALOG=
-TMP=`mktemp`
-trap 'rm -f $TMP' EXIT
 
 if [ "$DISPLAY" != "" ]; then
     DIALOG=`which Xdialog`
@@ -56,73 +54,6 @@ function menucmd()
 	ITEMS=$3
 	DEF=$4
     printf "%s --title '%s' --default-item '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$DEF" "$TEXT" "$ITEMS"
-}
-
-
-########## SWITCH ONOFF <GO_ADDR>
-function switchOnOff()
-{
-	GOADDR=$1
-	TITLE="Command"
-	MENUTEXT="Select:"
-	MENUITEMS="1 ON 2 OFF"
-	MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT" "$MENUITEMS"`
-	MENUID=`eval $MENUCMD` || byebye 0
-	if [[ $MENUID == 1 ]]; then
-		echo "send on..."
-		$GOWRITE $EIBDURL $GOADDR 0x81
-	elif [[ $MENUID == 2 ]]; then
-		echo "send off..."
-		$GOWRITE $EIBDURL $GOADDR 0x80
-	else
-		byebye 0
-	fi
-}
-
-
-
-########## ABSOLUTE <GO_ADDR>
-function absoluteSet()
-{
-	GOADDR=$1
-	TITLE="Value"
-	TEXT="Insert value to send:"
-	CMD=`printf "%s --title '%s' --inputbox '%s' 24 48 0x00 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-	OUT=`eval $CMD` || byebye 0
-	$GOWRITE $EIBDURL $GOADDR $OUT
-}
-
-
-########## RELATIVE <GO_ADDR>
-function relativeSet()
-{
-	GOADDR=$1
-	TITLE="Command"
-	MENUTEXT="Select:"
-	MENUITEMS="1 UP 2 DOWN"
-	MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT" "$MENUITEMS"`
-	MENUID=`eval $MENUCMD` || byebye 0
-	if [[ $MENUID == 1 ]]; then
-		echo "send up..."
-		$GOWRITE $EIBDURL $GOADDR 0x89
-	elif [[ $MENUID == 2 ]]; then
-		echo "send down..."
-		$GOWRITE $EIBDURL $GOADDR 0x81
-	else
-		byebye 0
-	fi
-
-	TITLE="Break command"
-	TEXT="Do you want to send the STOP message?"
-	MENUCMD=`printf "%s --title '%s' --yesno '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-	MENUID=`eval $MENUCMD`
-	EXIT=$?
-	if [[ $EXIT == 0 ]]; then
-		#yes
-		$GOWRITE $EIBDURL $GOADDR 0x80
-	else
-		byebye 0
-	fi
 }
 
 function Print() {
@@ -239,7 +170,7 @@ function ResetSomfyMotor() {
   SwitchUP 0
   SwitchDOWN 0
 
-  Ask "Have you seen blind UP/DOWN movement *two* times?"
+  Ask "Have you seen blind UP/DOWN movement ***two*** times?"
 
   Show "It works!"
 }
