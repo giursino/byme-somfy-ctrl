@@ -6,12 +6,9 @@
 
 SCRIPTNAME=$1
 
-GOWRITE="/usr/src/bcusdk/eibd/examples/GU_groupwrite"
-EIBDURL="local:/tmp/eib"
-
-######### USCITA
-# param $1: codice di uscita
-function uscita()
+######### EXIT HANDLER
+# param $1: exit status
+function byebye()
 {
   `which clear`
 	if [ -z $1 ]; then
@@ -64,7 +61,7 @@ function switchOnOff()
 	MENUTEXT="Select:"
 	MENUITEMS="1 ON 2 OFF"
 	MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT" "$MENUITEMS"`
-	MENUID=`eval $MENUCMD` || uscita 0
+	MENUID=`eval $MENUCMD` || byebye 0
 	if [[ $MENUID == 1 ]]; then
 		echo "send on..."
 		$GOWRITE $EIBDURL $GOADDR 0x81
@@ -72,7 +69,7 @@ function switchOnOff()
 		echo "send off..."
 		$GOWRITE $EIBDURL $GOADDR 0x80
 	else
-		uscita 0
+		byebye 0
 	fi
 }
 
@@ -85,7 +82,7 @@ function absoluteSet()
 	TITLE="Value"
 	TEXT="Insert value to send:"
 	CMD=`printf "%s --title '%s' --inputbox '%s' 24 48 0x00 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-	OUT=`eval $CMD` || uscita 0
+	OUT=`eval $CMD` || byebye 0
 	$GOWRITE $EIBDURL $GOADDR $OUT
 }
 
@@ -98,7 +95,7 @@ function relativeSet()
 	MENUTEXT="Select:"
 	MENUITEMS="1 UP 2 DOWN"
 	MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT" "$MENUITEMS"`
-	MENUID=`eval $MENUCMD` || uscita 0
+	MENUID=`eval $MENUCMD` || byebye 0
 	if [[ $MENUID == 1 ]]; then
 		echo "send up..."
 		$GOWRITE $EIBDURL $GOADDR 0x89
@@ -106,7 +103,7 @@ function relativeSet()
 		echo "send down..."
 		$GOWRITE $EIBDURL $GOADDR 0x81
 	else
-		uscita 0
+		byebye 0
 	fi
 
 	TITLE="Break command"
@@ -118,7 +115,7 @@ function relativeSet()
 		#yes
 		$GOWRITE $EIBDURL $GOADDR 0x80
 	else
-		uscita 0
+		byebye 0
 	fi
 }
 
@@ -132,7 +129,7 @@ function NotImplemented() {
 		#ok
 		return
 	else
-		uscita 0
+		byebye 0
 	fi
 }
 
@@ -191,9 +188,9 @@ MENUITEM[$I]="q QUIT"
 while [ 1 ]; do
 	exec 3>&1
 	CMD=`menucmd "Actions" "Select action:" "${MENUITEM[*]}" $MENUID`
-	MENUID=`eval $CMD` || uscita 1
+	MENUID=`eval $CMD` || byebye 1
 	if [[ $MENUID == "q" ]]; then
-		uscita 1
+		byebye 1
 	fi
 	if [[ $MENUID -le 9 ]]; then
 		RET=`${ACTION[$MENUID]}`
