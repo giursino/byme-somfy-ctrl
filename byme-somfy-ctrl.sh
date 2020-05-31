@@ -18,10 +18,10 @@ SRCADDR="00BB"
 function byebye()
 {
   `which clear` 2>&1 1>&3
-	if [ -z $1 ]; then
-		exit 1
-	fi
-	exit $1
+  if [ -z $1 ]; then
+    exit 1
+  fi
+  exit $1
 }
 
 DIALOG=
@@ -50,10 +50,10 @@ fi
 ########## MENU' DISPLAY <TITLE> <MENUTEXT> <ITEMS> <DEFAULT_ITEM>
 function menucmd()
 {
-	TITLE=$1
-	TEXT=$2
-	ITEMS=$3
-	DEF=$4
+  TITLE=$1
+  TEXT=$2
+  ITEMS=$3
+  DEF=$4
     printf "%s --title '%s' --default-item '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$DEF" "$TEXT" "$ITEMS"
 }
 
@@ -87,45 +87,45 @@ function SwitchDOWN() {
 }
 
 function NotImplemented() {
-	TITLE="Warning"
-	TEXT="Not yet implemented"
-	MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 25 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-	MENUID=`eval $MENUCMD`
-	EXIT=$?
-	if [[ $EXIT == 0 ]]; then
-		#ok
-		return
-	else
-		byebye 0
-	fi
+  TITLE="Warning"
+  TEXT="Not yet implemented"
+  MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 25 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
+  MENUID=`eval $MENUCMD`
+  EXIT=$?
+  if [[ $EXIT == 0 ]]; then
+    #ok
+    return
+  else
+    byebye 0
+  fi
 }
 
 function Show() {
-	TITLE="Info"
-	TEXT="$1"
-	MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-	MENUID=`eval $MENUCMD`
-	EXIT=$?
-	if [[ $EXIT == 0 ]]; then
-		#ok
-		return
-	else
-		byebye 0
-	fi
+  TITLE="Info"
+  TEXT="$1"
+  MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
+  MENUID=`eval $MENUCMD`
+  EXIT=$?
+  if [[ $EXIT == 0 ]]; then
+    #ok
+    return
+  else
+    byebye 0
+  fi
 }
 
 function Ask() {
-	TITLE="Question"
-	TEXT="$1"
-	MENUCMD=`printf "%s --title '%s' --yesno '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-	MENUID=`eval $MENUCMD`
-	EXIT=$?
-	if [[ $EXIT == 0 ]]; then
-		#yes
+  TITLE="Question"
+  TEXT="$1"
+  MENUCMD=`printf "%s --title '%s' --yesno '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
+  MENUID=`eval $MENUCMD`
+  EXIT=$?
+  if [[ $EXIT == 0 ]]; then
+    #yes
     return
-	else
-		byebye 0
-	fi
+  else
+    byebye 0
+  fi
 }
 
 function Wait() {
@@ -331,18 +331,18 @@ MENUITEM[$I]="q QUIT"
 ################################################## MAIN
 
 while [ 1 ]; do
-	exec 3>&1
-	CMD=`menucmd "Actions" "Select action:" "${MENUITEM[*]}" $MENUID`
-	MENUID=`eval $CMD` || byebye 1
-	if [[ $MENUID == "q" ]]; then
-		byebye 1
-	fi
-	if [[ $MENUID -le 9 ]]; then
-		RET=`${ACTION[$MENUID]}`
-		if [[ $? != 0 ]]; then
-			$DIALOG --title "Error" --msgbox "$RET" 10 40
-		fi
-	fi
+  exec 3>&1
+  CMD=`menucmd "Actions" "Select action:" "${MENUITEM[*]}" $MENUID`
+  MENUID=`eval $CMD` || byebye 1
+  if [[ $MENUID == "q" ]]; then
+    byebye 1
+  fi
+  if [[ $MENUID -le 9 ]]; then
+    RET=`${ACTION[$MENUID]}`
+    if [[ $? != 0 ]]; then
+      $DIALOG --title "Error" --msgbox "$RET" 10 40
+    fi
+  fi
 done
 
 exit 0
