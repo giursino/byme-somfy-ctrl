@@ -6,11 +6,13 @@
 
 SCRIPTNAME=$1
 
+SENDMSG="echo 01847-sendmsg"
+
 ######### EXIT HANDLER
 # param $1: exit status
 function byebye()
 {
-  `which clear`
+  `which clear` 2>&1 1>&3
 	if [ -z $1 ]; then
 		exit 1
 	fi
@@ -119,6 +121,26 @@ function relativeSet()
 	fi
 }
 
+function Print() {
+  echo $1 2>&1 1>&3
+}
+
+function Clear() {
+  clear 2>&1 1>&3
+}
+
+function Pause() {
+  echo "Press enter to continue..." 2>&1 1>&3
+  read
+}
+
+function SendMsg() {
+  MSG="$1"
+  $SENDMSG "$MSG" 2>&1 1>&3 || byebye 1
+  return 0
+}
+
+
 function NotImplemented() {
 	TITLE="Warning"
 	TEXT="Not yet implemented"
@@ -135,15 +157,44 @@ function NotImplemented() {
 
 
 function ResetByme() {
-  NotImplemented
+  Clear
+  Print "Reset AdjFB"
+  SendMsg "BC 110F 21D6 E1 00 81"
+  Pause
+  Print "Set new AdjFB"
+
+  Print "Set GO UP"
+  Print "Set GO DOWN"
+  Pause
 }
 
 function ResetSomfyMotor() {
   NotImplemented
+  Clear
+  Print "Reset motor to default settings: UP+DOWN for 8s"
+  Pause
 }
 
 function SetupBlindLimit() {
   NotImplemented
+  Clear
+  Print "UP + DOWN for 3s"
+  Print "> Have you seen blind UP/DOWN movement?"
+  Pause
+  Print "UP for 3s"
+  Print "> Have you seen blind UP/DOWN movement?"
+  Pause
+  Print "Manual DOWN/UP until blind is closed"
+  Pause
+  Print "> Do you want to memo the blind bottom limit?"
+  Pause
+  Print "UP for 0.5s"
+  Print "UP for 3s"
+  Print "> Have you seen blind UP/DOWN movement?"
+  Pause
+  Print "UP + DOWN for 3s"
+  Print "> Have you seen blind UP/DOWN movement?"
+  Pause
 }
 
 function ChangeBlindLimit() {
