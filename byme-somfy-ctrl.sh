@@ -157,7 +157,7 @@ function ResetByme() {
   if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
 
   FBID=$(Input "Please, insert blind actuator functional-block index (eg: 25)")
-  if [ -z $FBID ]; then
+  if [ -z $FBID ] || [ $FBID -lt 22 ] || [ $FBID -gt 25 ]; then
     echo "ERROR: invalid FB"
     byebye 1
   fi
@@ -165,7 +165,7 @@ function ResetByme() {
   TID=$(( $FBID - 22 ))
   RIDUP=$(( $TID*2 + 14 ))
   RIDDW=$(( $RIDUP+1 ))
-  GOUP=$(( (($TID*2)*7)+84 ))
+  GOUP=$(( ($TID*2)*7 + 84 ))
   GODW=$(( $GOUP+7 ))
 
   Print "Reset AdjFB BLIND"
