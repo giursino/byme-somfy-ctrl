@@ -149,6 +149,7 @@ function SetBymeDeviceAddress() {
     echo "ERROR: invalid address"
     byebye 1
   fi
+  echo "DSTADDR=$DSTADDR"
 }
 
 function ResetByme() {
@@ -420,6 +421,7 @@ while [ 1 ]; do
     if [[ $? != 0 ]]; then
       $DIALOG --title "Error" --msgbox "$RET" 10 40
     fi
+    eval $RET
   fi
 done
 
