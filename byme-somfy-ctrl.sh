@@ -27,24 +27,24 @@ function byebye()
 DIALOG=
 
 if [ "$DISPLAY" != "" ]; then
-    DIALOG=`which Xdialog`
-    DLGOPT=--wrap
+  DIALOG=`which Xdialog`
+  DLGOPT=--wrap
 fi
 if [ ! -x "$DIALOG" ]; then
-    DIALOG=`which dialog`
-    DLGOPT=
+  DIALOG=`which dialog`
+  DLGOPT=
 fi
 
 if [ ! -x $DIALOG ] || [ -z $DIALOG ]; then
-    echo $"No dialog program found. Please install Xdialog or dialog."
-    exit 1
+  echo $"No dialog program found. Please install Xdialog or dialog."
+  exit 1
 fi
 
 DIALOG="$DIALOG $DLGOPT"
 
 SU=`which sudo`
 if [ ! -x "$SU" ]; then
-    SU=`which su`
+  SU=`which su`
 fi
 
 ########## MENU' DISPLAY <TITLE> <MENUTEXT> <ITEMS> <DEFAULT_ITEM>
