@@ -17,7 +17,7 @@ SRCADDR="00BB"
 # param $1: exit status
 function byebye()
 {
-  `which clear` 2>&1 1>&3
+  $(which clear) 2>&1 1>&3
   if [ -z $1 ]; then
     exit 1
   fi
@@ -27,11 +27,11 @@ function byebye()
 DIALOG=
 
 if [ "$DISPLAY" != "" ]; then
-  DIALOG=`which Xdialog`
+  DIALOG=$(which Xdialog)
   DLGOPT=--wrap
 fi
 if [ ! -x "$DIALOG" ]; then
-  DIALOG=`which dialog`
+  DIALOG=$(which dialog)
   DLGOPT=
 fi
 
@@ -42,9 +42,9 @@ fi
 
 DIALOG="$DIALOG $DLGOPT"
 
-SU=`which sudo`
+SU=$(which sudo)
 if [ ! -x "$SU" ]; then
-  SU=`which su`
+  SU=$(which su)
 fi
 
 ########## MENU' DISPLAY <TITLE> <MENUTEXT> <ITEMS> <DEFAULT_ITEM>
