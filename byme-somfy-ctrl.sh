@@ -327,6 +327,39 @@ function ManualModeStep() {
   done
 }
 
+function RestoreOriginalBymeConfiguration() {
+  NotImplemented
+
+  Ask "Are you sure to restore the By-me device to previous configuration?"
+
+  if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
+  #TODO: check FBID, RIDUP,...
+
+  Print "Remove GO link UP"
+  SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GOUP)  02  9900 "
+  sleep 0.1
+
+  Print "Remove GO link DOWN"
+  SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GODW)  02  9901 "
+  sleep 0.1
+
+  Print "Reset new AdjFB SWITCH UP"
+  SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $RIDUP) FF  1001  FF"
+  sleep 0.1
+
+  Print "Reset new AdjFB SWITCH DOWN"
+  SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $RIDDW) FF  1001  FF"
+  sleep 0.1
+
+  Print "Set AdjFB BLIND"
+  SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $FBID)  FF  1001  00"
+  sleep 0.1
+
+  Show "It works! I have changed By-me device configuration."
+
+}
+
+
 function DeleteBymeConfiguration() {
   Ask "Are you sure to restore to factory default the By-me device?"
 
@@ -359,6 +392,10 @@ ACTION[$I]="ChangeBlindLimit"
 let I++
 MENUITEM[$I]="$I \"Manual mode\""
 ACTION[$I]="ManualMode"
+
+let I++
+MENUITEM[$I]="$I \"Restore original By-me configuration\""
+ACTION[$I]="RestoreOriginalBymeConfiguration"
 
 let I++
 MENUITEM[$I]="$I \"Delete By-me configuration\""
