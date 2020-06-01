@@ -4,7 +4,7 @@
 # Giuseppe Ursino 2020.
 
 # Set DEBUG to "true" or "false"
-DEBUG=true
+#DEBUG=true
 DEBUG=false
 if $DEBUG; then set -x; fi
 
@@ -153,7 +153,22 @@ function SetBymeDeviceAddress() {
 }
 
 function SetBymeFunctionalBlock() {
-  #DEVICEID=$(Input "Please, select By-me device blind actuator")
+  TITLE="By-me device"
+  MENUTEXT="Please, select By-me device blind actuator:"
+  MENUITEMS="1 '01470.x (9in/8out)' on 2 '01471 (4out)' off 3 '01476 (blind module 2in 3out)' off 4 'Custom' off"
+  MENUCMD=$(printf "%s --title '%s' --radiolist '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS")
+  DEVICEID=$(eval $MENUCMD)
+  if [ $DEVICEID -eq 1 ]; then
+    continue
+  elif [ $DEVICEID -ge 2 ] && [ $DEVICEID -le 3 ]; then
+    NotImplemented
+    byebye 0
+  elif [ $DEVICEID -eq 4 ]; then
+    continue
+  else
+    byebye 0
+  fi
+
   FBID=$(Input "Please, insert blind actuator functional-block index (eg: 25)")
   if [ -z $FBID ]; then
     echo "ERROR: invalid FB"
@@ -164,16 +179,25 @@ function SetBymeFunctionalBlock() {
     byebye 1
   fi
 
-  if [ $FBID -lt 22 ] || [ $FBID -gt 25 ]; then
-    echo "ERROR: invalid FB value, correct values are 22, 23, 24 and 25"
-    byebye 1
+  if [ $DEVICEID -eq 1 ]; then
+    if [ $FBID -lt 22 ] || [ $FBID -gt 25 ]; then
+      echo "ERROR: invalid FB value, correct values are 22, 23, 24 and 25"
+      byebye 1
+    fi
+
+    TID=$(( $FBID - 22 ))
+    RIDUP=$(( $TID*2 + 14 ))
+    RIDDW=$(( $RIDUP+1 ))
+    GOUP=$(( ($TID*2)*7 + 84 ))
+    GODW=$(( $GOUP+7 ))
   fi
 
-  TID=$(( $FBID - 22 ))
-  RIDUP=$(( $TID*2 + 14 ))
-  RIDDW=$(( $RIDUP+1 ))
-  GOUP=$(( ($TID*2)*7 + 84 ))
-  GODW=$(( $GOUP+7 ))
+  if [ $DEVICEID -eq 4 ]; then
+    RIDUP=$(Input "Please, insert Switch UP functional-block index (eg: 14)")
+    RIDDW=$(Input "Please, insert Switch DOWN functional-block index (eg: 15)")
+    GOUP=$(Input "Please, insert Switch UP communication-object index (eg: 84)")
+    GODW=$(Input "Please, insert Switch DOWN communication-object index (eg: 91)")
+  fi
 
   echo "FBID=$FBID"
   echo "TID=$TID"
@@ -181,6 +205,7 @@ function SetBymeFunctionalBlock() {
   echo "RIDDW=$RIDDW"
   echo "GOUP=$GOUP"
   echo "GODW=$GODW"
+
 }
 
 function SelectBymeDevice() {
