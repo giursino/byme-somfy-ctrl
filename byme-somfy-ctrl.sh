@@ -184,12 +184,12 @@ function ResetByme() {
   if $DEBUG; then Pause; fi
 
   Print "Set GO link UP"
-  SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GOUP)  01  9900 "
+  SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GOUP)  00  9900 "
   sleep 0.1
   if $DEBUG; then Pause; fi
 
   Print "Set GO link DOWN"
-  SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GODW)  01  9901 "
+  SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GODW)  00  9901 "
   sleep 0.1
   if $DEBUG; then Pause; fi
 
