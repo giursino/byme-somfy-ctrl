@@ -152,7 +152,7 @@ function SetBymeDeviceAddress() {
   echo "DSTADDR=$DSTADDR"
 }
 
-function ResetByme() {
+function ChangeBymeConfiguration() {
   Ask "Are you sure to change By-me configuration?"
 
   if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
@@ -375,8 +375,8 @@ function DeleteBymeConfiguration() {
 
 
 I=0
-MENUITEM[$I]="$I \"Reset By-me FB\""
-ACTION[$I]="ResetByme"
+MENUITEM[$I]="$I \"Change By-me configuration\""
+ACTION[$I]="ChangeBymeConfiguration"
 
 let I++
 MENUITEM[$I]="$I \"Reset Somfy motor\""
