@@ -374,8 +374,6 @@ function ManualModeStep() {
 }
 
 function RestoreOriginalBymeConfiguration() {
-  NotImplemented
-
   Ask "Are you sure to restore the By-me device to previous configuration?"
 
   if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
