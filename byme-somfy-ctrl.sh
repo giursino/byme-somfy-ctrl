@@ -261,13 +261,31 @@ function ChangeBlindLimit() {
 
 function ManualMode() {
 
-  while [ 1 ]; do
+  while [ true ]; do
+    TITLE="Command"
+    MENUTEXT="Select:"
+    MENUITEMS="1 'Move' 2 'Step'"
+    MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS"`
+    MENUID=`eval $MENUCMD`
+    if [[ $MENUID == 1 ]]; then
+      ManualModeMove
+    elif [[ $MENUID == 2 ]]; then
+      ManualModeStep
+    else
+      break
+    fi
+  done
+}
+
+function ManualModeMove() {
+
+  while [ true ]; do
     SwitchUP 0
     SwitchDOWN 0
 
     TITLE="Command"
     MENUTEXT="Select:"
-    MENUITEMS="1 UP 2 DOWN"
+    MENUITEMS="1 'UP' 2 'DOWN'"
     MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS"`
     MENUID=`eval $MENUCMD`
     if [[ $MENUID == 1 ]]; then
@@ -283,6 +301,29 @@ function ManualMode() {
     MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
     MENUID=`eval $MENUCMD`
     EXIT=$?
+  done
+}
+
+function ManualModeStep() {
+
+  while [ true ]; do
+    SwitchUP 0
+    SwitchDOWN 0
+
+    TITLE="Command"
+    MENUTEXT="Select:"
+    MENUITEMS="1 'Step UP' 2 'Step DOWN'"
+    MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS"`
+    MENUID=`eval $MENUCMD`
+    if [[ $MENUID == 1 ]]; then
+      SwitchUP 1
+    elif [[ $MENUID == 2 ]]; then
+      SwitchDOWN 1
+    else
+      break
+    fi
+
+    sleep 0.1
   done
 }
 
