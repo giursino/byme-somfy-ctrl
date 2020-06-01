@@ -89,8 +89,8 @@ function SwitchDOWN() {
 function NotImplemented() {
   TITLE="Warning"
   TEXT="Not yet implemented"
-  MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 25 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-  MENUID=`eval $MENUCMD`
+  MENUCMD=$(printf "%s --title '%s' --msgbox '%s' 6 25 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT")
+  MENUID=$(eval $MENUCMD)
   EXIT=$?
   if [[ $EXIT == 0 ]]; then
     #ok
@@ -103,8 +103,8 @@ function NotImplemented() {
 function Show() {
   TITLE="Info"
   TEXT="$1"
-  MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-  MENUID=`eval $MENUCMD`
+  MENUCMD=$(printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT")
+  MENUID=$(eval $MENUCMD)
   EXIT=$?
   if [[ $EXIT == 0 ]]; then
     #ok
@@ -117,8 +117,8 @@ function Show() {
 function Ask() {
   TITLE="Question"
   TEXT="$1"
-  MENUCMD=`printf "%s --title '%s' --yesno '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-  MENUID=`eval $MENUCMD`
+  MENUCMD=$(printf "%s --title '%s' --yesno '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT")
+  MENUID=$(eval $MENUCMD)
   EXIT=$?
   if [[ $EXIT == 0 ]]; then
     #yes
@@ -138,8 +138,8 @@ function Wait() {
 function Input() {
   TITLE="Input required"
   TEXT="$1"
-  CMD=`printf "%s --title '%s' --inputbox '%s' 24 48 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-  OUT=`eval $CMD` || byebye 0
+  CMD=$(printf "%s --title '%s' --inputbox '%s' 24 48 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT")
+  OUT=$(eval $CMD) || byebye 0
   echo $OUT
 }
 
@@ -265,8 +265,8 @@ function ManualMode() {
     TITLE="Command"
     MENUTEXT="Select:"
     MENUITEMS="1 'Move' 2 'Step'"
-    MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS"`
-    MENUID=`eval $MENUCMD`
+    MENUCMD=$(printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS")
+    MENUID=$(eval $MENUCMD)
     if [[ $MENUID == 1 ]]; then
       ManualModeMove
     elif [[ $MENUID == 2 ]]; then
@@ -286,8 +286,8 @@ function ManualModeMove() {
     TITLE="Command"
     MENUTEXT="Select:"
     MENUITEMS="1 'UP' 2 'DOWN'"
-    MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS"`
-    MENUID=`eval $MENUCMD`
+    MENUCMD=$(printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS")
+    MENUID=$(eval $MENUCMD)
     if [[ $MENUID == 1 ]]; then
       SwitchUP 1
     elif [[ $MENUID == 2 ]]; then
@@ -298,8 +298,8 @@ function ManualModeMove() {
 
     TITLE="Command"
     TEXT="Press OK to to STOP movement"
-    MENUCMD=`printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT"`
-    MENUID=`eval $MENUCMD`
+    MENUCMD=$(printf "%s --title '%s' --msgbox '%s' 6 48 2>&1 1>&3" "$DIALOG" "$TITLE" "$TEXT")
+    MENUID=$(eval $MENUCMD)
     EXIT=$?
   done
 }
@@ -313,8 +313,8 @@ function ManualModeStep() {
     TITLE="Command"
     MENUTEXT="Select:"
     MENUITEMS="1 'Step UP' 2 'Step DOWN'"
-    MENUCMD=`printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS"`
-    MENUID=`eval $MENUCMD`
+    MENUCMD=$(printf "%s --title '%s' --menu '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS")
+    MENUID=$(eval $MENUCMD)
     if [[ $MENUID == 1 ]]; then
       SwitchUP 1
     elif [[ $MENUID == 2 ]]; then
@@ -410,13 +410,13 @@ MENUITEM[$I]="q QUIT"
 
 while [ 1 ]; do
   exec 3>&1
-  CMD=`menucmd "Actions" "Select action:" "${MENUITEM[*]}" $MENUID`
-  MENUID=`eval $CMD` || byebye 1
+  CMD=$(menucmd "Actions" "Select action:" "${MENUITEM[*]}" $MENUID)
+  MENUID=$(eval $CMD) || byebye 1
   if [[ $MENUID == "q" ]]; then
     byebye 1
   fi
   if [[ $MENUID -le 9 ]]; then
-    RET=`${ACTION[$MENUID]}`
+    RET=$(${ACTION[$MENUID]})
     if [[ $? != 0 ]]; then
       $DIALOG --title "Error" --msgbox "$RET" 10 40
     fi
