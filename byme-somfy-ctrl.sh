@@ -144,7 +144,7 @@ function Input() {
 }
 
 function SetBymeDeviceAddress() {
-  DSTADDR=$(Input "Please, insert By-me device address (eg: 2001)")
+  DSTADDR=$(Input "Please, insert By-me device address (eg: 2005)")
   if [ -z $DSTADDR ]; then
     echo "ERROR: invalid address"
     byebye 1
@@ -152,14 +152,20 @@ function SetBymeDeviceAddress() {
   echo "DSTADDR=$DSTADDR"
 }
 
-function ChangeBymeConfiguration() {
-  Ask "Are you sure to change By-me configuration?"
-
-  if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
-
+function SetBymeFunctionalBlock() {
+  #DEVICEID=$(Input "Please, select By-me device blind actuator")
   FBID=$(Input "Please, insert blind actuator functional-block index (eg: 25)")
-  if [ -z $FBID ] || [ $FBID -lt 22 ] || [ $FBID -gt 25 ]; then
+  if [ -z $FBID ]; then
     echo "ERROR: invalid FB"
+    byebye 1
+  fi
+  if ! [ "$FBID" -eq "$FBID" ] 2> /dev/null; then
+    echo "ERROR: Sorry, integers only"
+    byebye 1
+  fi
+
+  if [ $FBID -lt 22 ] || [ $FBID -gt 25 ]; then
+    echo "ERROR: invalid FB value, correct values are 22, 23, 24 and 25"
     byebye 1
   fi
 
@@ -169,30 +175,44 @@ function ChangeBymeConfiguration() {
   GOUP=$(( ($TID*2)*7 + 84 ))
   GODW=$(( $GOUP+7 ))
 
+  echo "FBID=$FBID"
+  echo "TID=$TID"
+  echo "RIDUP=$RIDUP"
+  echo "RIDDW=$RIDDW"
+  echo "GOUP=$GOUP"
+  echo "GODW=$GODW"
+}
+
+function SelectBymeDevice() {
+  SetBymeDeviceAddress
+  SetBymeFunctionalBlock
+}
+
+function ChangeBymeConfiguration() {
+  Ask "Are you sure to change By-me configuration?"
+
+  if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
+  if [ -z $FBID ]; then SetBymeFunctionalBlock; fi
+
   Print "Reset AdjFB BLIND"
   SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $FBID)  FF  1001  FF"
   sleep 0.1
-  if $DEBUG; then Pause; fi
 
   Print "Set new AdjFB SWITCH UP"
   SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $RIDUP) FF  1001  00"
   sleep 0.1
-  if $DEBUG; then Pause; fi
 
   Print "Set new AdjFB SWITCH DOWN"
   SendMsg "BC $SRCADDR $DSTADDR 66 03D7  $(printf '%X\n' $RIDDW) FF  1001  00"
   sleep 0.1
-  if $DEBUG; then Pause; fi
 
   Print "Set GO link UP"
   SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GOUP)  00  9900 "
   sleep 0.1
-  if $DEBUG; then Pause; fi
 
   Print "Set GO link DOWN"
   SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GODW)  00  9901 "
   sleep 0.1
-  if $DEBUG; then Pause; fi
 
   Show "It works! I have changed By-me device configuration.\nWarning to move the blind."
 }
@@ -334,7 +354,7 @@ function RestoreOriginalBymeConfiguration() {
   Ask "Are you sure to restore the By-me device to previous configuration?"
 
   if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
-  #TODO: check FBID, RIDUP,...
+  if [ -z $FBID ]; then SetBymeFunctionalBlock; fi
 
   Print "Remove GO link UP"
   SendMsg "BC $SRCADDR $DSTADDR 65 03E7  $(printf '%X\n' $GOUP)  02  9900 "
@@ -375,6 +395,10 @@ function DeleteBymeConfiguration() {
 
 
 I=0
+MENUITEM[$I]="$I \"Select By-me device\""
+ACTION[$I]="SelectBymeDevice"
+
+let I++
 MENUITEM[$I]="$I \"Change By-me configuration\""
 ACTION[$I]="ChangeBymeConfiguration"
 
