@@ -10,7 +10,7 @@ if $DEBUG; then set -x; fi
 
 SCRIPTNAME=$1
 
-SENDMSG="echo 01847-sendmsg"
+SENDMSG="01847-sendmsg"
 SRCADDR="00BB"
 
 ######### EXIT HANDLER
