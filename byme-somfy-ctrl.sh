@@ -208,9 +208,29 @@ function SetBymeFunctionalBlock() {
 
 }
 
+function ChooseActuator() {
+  TITLE="Actuator"
+  MENUTEXT="Please, select blind actuator:"
+  MENUITEMS="1 'Cameretta' on 2 'Camera matrimoniale' off 3 'Studio' off 4 'Cucina Ovest' off 5 'Cucina Sud' off 6 'Soggiorno' off 7 'Bagno giorno' off 8 'Bagno notte' off 9 'Custom' off"
+  MENUCMD=$(printf "%s --title '%s' --radiolist '%s' 24 48 15 %s 2>&1 1>&3" "$DIALOG" "$TITLE" "$MENUTEXT" "$MENUITEMS")
+  DEVICEID=$(eval $MENUCMD)
+  if [ $DEVICEID -eq 1 ]; then
+    DSTADDR="2005"
+    FBID="25"
+  elif [ $DEVICEID -eq 2 ]; then
+    NotImplemented
+    byebye 0
+  elif [ $DEVICEID -eq 9 ]; then
+    continue
+  else
+    byebye 0
+  fi
+}
+
 function SelectBymeDevice() {
-  SetBymeDeviceAddress
-  SetBymeFunctionalBlock
+  ChooseActuator
+  if [ -z $DSTADDR ]; then SetBymeDeviceAddress; fi
+  if [ -z $FBID ]; then SetBymeFunctionalBlock; fi
 }
 
 function ChangeBymeConfiguration() {
